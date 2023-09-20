@@ -23,26 +23,50 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const testUserDB001 = client.db("testUserDB").collection("users");
-    
-    app.get('/users', async (req, res)=>{
-        const result = await testUserDB001.find({}).toArray()
-        res.send(result)
-    })
 
-    app.post('/users', async (req, res)=>{
-        const user = req.body
-        const result = await testUserDB001.insertOne(user)
-        res.send(result)
-    })
+    app.get("/users", async (req, res) => {
+      const result = await testUserDB001.find({}).toArray();
+      res.send(result);
+    });
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await testUserDB001.insertOne(user);
+      res.send(result);
+    });
 
     // Delete
-    app.delete('/users/:id', async (req, res)=>{
-      const id = req.params.id 
-      const query = {_id : new ObjectId(req.params.id)}
-      const result = await testUserDB001.deleteOne(query)
-      res.send(result)
-    })
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(req.params.id) };
+      const result = await testUserDB001.deleteOne(query);
+      res.send(result);
+    });
 
+    // update
+    app.get("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await testUserDB001.findOne(query);
+      res.send(result);
+    });
+
+    app.put("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updatedUser = req.body;
+      /* Set the upsert option to insert a document if no documents match the filter */
+      const options = { upsert: true };
+      // Specify the update to set a value for the plot field
+      const updateDoc = {
+        $set: {
+          name : updatedUser.name,
+          email : updatedUser.email
+        },
+      };
+      const result = await testUserDB001.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();

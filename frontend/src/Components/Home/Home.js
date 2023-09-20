@@ -3,7 +3,7 @@ import { Link, useLoaderData } from "react-router-dom";
 
 const Home = () => {
   const users = useLoaderData();
-  const [displayUsers, setDisplayUsers] = useState((users))
+  const [displayUsers, setDisplayUsers] = useState(users);
 
   const handleDelete = (user) => {
     console.log(user._id);
@@ -17,18 +17,22 @@ const Home = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          
-            if(data.deletedCount > 0){
-                alert(`User Deleted Successfully`)
+          if (data.deletedCount > 0) {
+            alert(`User Deleted Successfully`);
 
-                // instent Delete and remove from UI
-                const remainingUsers = displayUsers.filter(dusers => dusers._id !== user._id)
-                setDisplayUsers(remainingUsers)
-            }
-
+            // instent Delete and remove from UI
+            const remainingUsers = displayUsers.filter(
+              (dusers) => dusers._id !== user._id
+            );
+            setDisplayUsers(remainingUsers);
+          }
         })
         .catch((err) => console.log(err));
     }
+  };
+
+  const handleUpdate = (user) => {
+    console.log(user._id);
   };
 
   return (
@@ -37,6 +41,9 @@ const Home = () => {
       {displayUsers.map((user) => (
         <p key={user._id}>
           {user.name} : {user.email}
+          <Link to={`/users/${user._id}`}>
+            <button>Edit</button>
+          </Link>
           <button onClick={() => handleDelete(user)}>X</button>
         </p>
       ))}
